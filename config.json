@@ -1,0 +1,15 @@
+{
+    "type": "classic",
+    "method": "regression",
+    "algorithm": "SVC",
+    "evaluation": "default",
+    "C": [
+        1,
+        2,
+        3
+    ],
+    "sigma": [
+        1,
+        2
+    ]
+}
