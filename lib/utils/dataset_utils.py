@@ -8,12 +8,16 @@ def load_data():
     df_val = pd.read_csv("data/validation.txt", names=COLS_LABELED)
     df_test = pd.read_csv("data/test.txt", names=COLS_NOT_LABELED)
 
-    return df_train, df_val, df_test
+    return shuffle_df(df_train), df_val, df_test
+
+
+def shuffle_df(df):
+    return df.sample(frac=1).reset_index(drop=True)
 
 
 def kfold(df_train, df_val, num_folds):
     df = pd.concat([df_train, df_val])
-    df = df.sample(frac=1).reset_index(drop=True)
+    df = shuffle_df(df)
 
     num = df.shape[0]
     fold_size = num // num_folds
