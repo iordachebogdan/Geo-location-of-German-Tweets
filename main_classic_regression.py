@@ -9,6 +9,7 @@ from sklearn.pipeline import Pipeline
 from lib.classic.regression.nusvr import NuSVR
 from lib.classic.regression.linearsvr import LinearSVR
 
+from lib.preprocessing.cleaning import basic_clean
 from lib.preprocessing.features import BOW
 
 from lib.utils.config_utils import expand_config
@@ -52,8 +53,8 @@ def main():
 
     configs = expand_config(config)
     results_path = (
-        f'runs/{datetime.now()}-{"TEST" if args.test else ""}{config["type"]}'
-        f'-{config["method"]}-{config["algorithm"]}'
+        f'runs/{datetime.now()}-{"TEST-" if args.test else ""}{config["type"]}'
+        f'-{config["method"]}-{list(config["algorithm"].keys())[0]}'
     )
     os.mkdir(results_path)
     df_performance = pd.DataFrame()
@@ -75,16 +76,19 @@ def main():
             df_train = shuffle_df(df_train)
             df_val = df_test
 
+        for df in [df_train, df_val]:
+            df["clean_text"] = [basic_clean(text) for text in df["text"]]
+
         print("Fitting latitude...")
-        pipeline_lat.fit(df_train["text"], df_train["lat"])
+        pipeline_lat.fit(df_train["clean_text"], df_train["lat"])
         print("Fitting longitude...")
-        pipeline_long.fit(df_train["text"], df_train["long"])
+        pipeline_long.fit(df_train["clean_text"], df_train["long"])
 
-        predict_train_lat = pipeline_lat.predict(df_train["text"])
-        predict_train_long = pipeline_long.predict(df_train["text"])
+        predict_train_lat = pipeline_lat.predict(df_train["clean_text"])
+        predict_train_long = pipeline_long.predict(df_train["clean_text"])
 
-        predict_val_lat = pipeline_lat.predict(df_val["text"])
-        predict_val_long = pipeline_long.predict(df_val["text"])
+        predict_val_lat = pipeline_lat.predict(df_val["clean_text"])
+        predict_val_long = pipeline_long.predict(df_val["clean_text"])
 
         true_train = np.column_stack([df_train["lat"], df_train["long"]])
         predict_train = np.column_stack([predict_train_lat, predict_train_long])

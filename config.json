@@ -7,7 +7,7 @@
             "lowercase": 1,
             "use_idf": 1,
             "ngram_min": 3,
-            "ngram_max": 3,
+            "ngram_max": 4,
             "max_features": 10000
         }
     },
