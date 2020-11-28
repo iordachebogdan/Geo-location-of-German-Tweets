@@ -1,0 +1,2 @@
+,c,kernel,lowercase,mae_train,mae_val,max_features,ngram_max,ngram_min,nu,use_idf
+0,1.0,rbf,1.0,0.17087862436094883,inf,10000.0,4.0,3.0,0.7,1.0
