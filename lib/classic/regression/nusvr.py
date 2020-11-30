@@ -9,7 +9,7 @@ class NuSVR(object):
         self.kernel = kernel
 
     def get_regressor(self):
-        return svm.NuSVR(nu=self.nu, C=self.c, kernel=self.kernel)
+        return svm.NuSVR(nu=self.nu, C=self.c, kernel=self.kernel, verbose=True)
 
     def get_config(self):
         return {
