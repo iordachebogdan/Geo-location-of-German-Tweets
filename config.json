@@ -4,7 +4,7 @@
     "clean": {},
     "class_logic": {
         "kmeans": {
-            "num_clusters": 20
+            "num_clusters": 10
         }
     },
     "representation": {

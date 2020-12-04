@@ -1,0 +1,2 @@
+,analyzer,c,class_acc_train,class_acc_val,kernel,lowercase,mae_train,mae_val,max_features,ngram_max,ngram_min,use_idf
+0,word,1.0,0.8101669397334278,0.5558475689881734,linear,1.0,0.3516972936482893,0.5349560400938945,10000.0,1.0,1.0,1.0
