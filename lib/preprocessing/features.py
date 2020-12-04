@@ -62,7 +62,7 @@ class StringKernelPresenceBits(object):
                 self.kernel_matrix.append([int(x) for x in line.strip().split(" ")])
                 assert len(self.kernel_matrix[-1]) == len(self.id_to_index)
                 cnt += 1
-                if cnt % 200 == 0:
+                if cnt % 2000 == 0:
                     print(f"Read {cnt} lines...")
         assert len(self.kernel_matrix) == len(self.id_to_index)
 
@@ -73,7 +73,7 @@ class StringKernelPresenceBits(object):
 
         r = np.zeros((len(xs), len(ys)))
         print(f"Computing string kernel for {len(xs)}x{len(ys)}...")
-        for i, x in tqdm(enumerate(xs)):
+        for i, x in enumerate(tqdm(xs)):
             for j, y in enumerate(ys):
                 idx = self.id_to_index[int(x[0])]
                 idy = self.id_to_index[int(y[0])]

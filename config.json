@@ -1,7 +1,12 @@
 {
     "type": "classic",
-    "method": "regression",
+    "method": "classification",
     "clean": {},
+    "class_logic": {
+        "kmeans": {
+            "num_clusters": 20
+        }
+    },
     "representation": {
         "bow": {
             "lowercase": 1,
@@ -13,10 +18,9 @@
         }
     },
     "algorithm": {
-        "nusvr": {
+        "svm": {
             "c": 1,
-            "nu": 0.7,
-            "kernel": "rbf"
+            "kernel": "linear"
         }
     }
 }
