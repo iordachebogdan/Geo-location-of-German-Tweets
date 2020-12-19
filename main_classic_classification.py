@@ -14,6 +14,7 @@ from lib.preprocessing.features import BOW
 from lib.utils.classification_utils import (
     ClassificationOnCities,
     ClassificationOnKMeans,
+    ClassificationOnRegions,
 )
 from lib.utils.config_utils import expand_config
 from lib.utils.dataset_utils import load_data, shuffle_df
@@ -51,6 +52,8 @@ def build_class_logic(config, df_train):
         return ClassificationOnCities(df_train, **config["cities"])
     elif "kmeans" in config:
         return ClassificationOnKMeans(df_train, **config["kmeans"])
+    elif "regions" in config:
+        return ClassificationOnRegions(df_train, **config["regions"])
 
 
 def main():
