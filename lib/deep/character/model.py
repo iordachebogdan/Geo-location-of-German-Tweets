@@ -34,7 +34,7 @@ class CharacterLevelCNN:
         self.num_of_classes = num_of_classes
         self.threshold = threshold
         self.dropout_p = dropout_p
-        self.optimizer = Adam(learning_rate=0.01)
+        self.optimizer = optimizer
         self.loss = loss or (
             "categorical_crossentropy" if num_of_classes > 1 else "MSE"
         )

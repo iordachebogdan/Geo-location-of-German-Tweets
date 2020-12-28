@@ -43,14 +43,10 @@ class Data:
         s = s.lower()
         s = re.sub(r"\s+", " ", s)
         s = s.strip()
+        max_length = min(len(s), self.length)
         str2idx = np.zeros(self.length, dtype="int64")
-        pos = 0
-        for c in s:
-            if c in self.alphabet:
-                str2idx[pos] = self.dict[c]
-                pos += 1
-            elif c == " ":
-                pos += 1
-            if pos == self.length:
-                break
+        for i in range(1, max_length + 1):
+            c = s[-i]
+            if c in self.dict:
+                str2idx[i - 1] = self.dict[c]
         return str2idx
