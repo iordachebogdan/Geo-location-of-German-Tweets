@@ -35,7 +35,7 @@ class CharacterLevelCNN:
         self.dropout_p = dropout_p
         self.optimizer = optimizer
         self.loss = loss or (
-            "categorical_crossentropy" if num_of_classes > 1 else "MSE"
+            "categorical_crossentropy" if num_of_classes > 1 else "MAE"
         )
         self._build()
 
