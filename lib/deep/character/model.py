@@ -9,6 +9,7 @@ from tensorflow.keras.layers import (
     Dense,
     Dropout,
 )
+from tensorflow.keras.optimizers import Adam
 
 
 class CharacterLevelCNN:
@@ -33,9 +34,9 @@ class CharacterLevelCNN:
         self.num_of_classes = num_of_classes
         self.threshold = threshold
         self.dropout_p = dropout_p
-        self.optimizer = optimizer
+        self.optimizer = Adam(learning_rate=0.01)
         self.loss = loss or (
-            "categorical_crossentropy" if num_of_classes > 1 else "MAE"
+            "categorical_crossentropy" if num_of_classes > 1 else "MSE"
         )
         self._build()
 

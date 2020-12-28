@@ -8,7 +8,7 @@ class Data:
         df,
         label_key=None,
         alphabet="abcdefghijklmnopqrstuvwxyzäöüß0123456789-,;.!?:'\"/\\|_@#$%^&*~`+-=<>()[]{}",
-        input_size=500,
+        input_size=750,
         num_of_classes=1,
     ):
         self.alphabet = alphabet
