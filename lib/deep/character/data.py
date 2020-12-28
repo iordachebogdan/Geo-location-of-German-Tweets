@@ -51,4 +51,6 @@ class Data:
                 pos += 1
             elif c == " ":
                 pos += 1
+            if pos == self.length:
+                break
         return str2idx
