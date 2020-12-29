@@ -9,7 +9,6 @@ from tensorflow.keras.layers import (
     Dense,
     Dropout,
 )
-from tensorflow.keras.optimizers import Adam
 
 
 class CharacterLevelCNN:
