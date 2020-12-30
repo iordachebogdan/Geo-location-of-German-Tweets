@@ -1,15 +1,18 @@
 {
     "method": "regression",
     "model": {
-        "vocab_size": 10000,
+        "vocab_size": 20000,
         "embedding_size": 600,
         "hidden_dim": 600,
-        "clf_dim": 1024,
-        "dropout_p": 0.5,
+        "clf_dim": [
+            1024,
+            1024
+        ],
+        "dropout_p": 0,
         "optimizer": "adam"
     },
     "training": {
         "epochs": 20,
-        "batch_size": 32
+        "batch_size": 16
     }
 }
