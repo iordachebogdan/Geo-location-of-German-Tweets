@@ -13,11 +13,11 @@ def basic_clean(text):
 
 def clean(text):
     text = text.lower()
-    text = demojize(text, delimiters=(" :", ": "))
-    text = re.sub(r"@[^\s]+", " :user_handle: ", text)
-    text = re.sub(r"https?://[^ ]+", " :url: ", text)
-    text = re.sub(r"www.[^ ]+", " :url: ", text)
-    text = re.sub(r"[^a-zA-Zäöüß:_#]", " ", text)
+    text = demojize(text, delimiters=(" #", "# "))
+    text = re.sub(r"@[^\s]+", " #user_handle# ", text)
+    text = re.sub(r"https?://[^ ]+", " #url# ", text)
+    text = re.sub(r"www.[^ ]+", " #url# ", text)
+    text = re.sub(r"[^a-zA-Zäöüß_#]", " ", text)
     text = re.sub(r"\s+", " ", text)
     text = text.strip()
     return text
