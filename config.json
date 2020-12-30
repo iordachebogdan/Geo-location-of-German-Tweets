@@ -3,7 +3,9 @@
     "method": "classification",
     "clean": {},
     "class_logic": {
-        "regions": {}
+        "kmeans": {
+            "num_clusters": 10
+        }
     },
     "representation": {
         "bow": {

@@ -8,7 +8,7 @@ from sklearn.pipeline import Pipeline
 
 from lib.classic.classification.svm import SVM
 
-from lib.preprocessing.cleaning import basic_clean
+from lib.preprocessing.cleaning import clean
 from lib.preprocessing.features import BOW
 
 from lib.utils.classification_utils import (
@@ -92,7 +92,7 @@ def main():
             class_logic.set_true_class(df_val)
 
         for df in [df_train, df_val]:
-            df["clean_text"] = [basic_clean(text) for text in df["text"]]
+            df["clean_text"] = [clean(text) for text in df["text"]]
 
         print("Fitting classifier...")
         pipeline.fit(df_train["clean_text"], df_train["true_class"])

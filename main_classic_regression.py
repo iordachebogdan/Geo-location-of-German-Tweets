@@ -9,7 +9,7 @@ from sklearn.pipeline import Pipeline
 from lib.classic.regression.nusvr import NuSVR
 from lib.classic.regression.linearsvr import LinearSVR
 
-from lib.preprocessing.cleaning import basic_clean
+from lib.preprocessing.cleaning import clean
 from lib.preprocessing.features import BOW
 
 from lib.utils.config_utils import expand_config
@@ -77,7 +77,7 @@ def main():
             df_val = df_test
 
         for df in [df_train, df_val]:
-            df["clean_text"] = [basic_clean(text) for text in df["text"]]
+            df["clean_text"] = [clean(text) for text in df["text"]]
 
         print("Fitting latitude...")
         pipeline_lat.fit(df_train["clean_text"], df_train["lat"])

@@ -30,6 +30,9 @@ class BOW(object):
                         ),
                         analyzer=self.analyzer,
                         max_features=self.max_features,
+                        tokenizer=(
+                            None if self.analyzer != "word" else lambda t: t.split(" ")
+                        ),
                     ),
                 ),
                 ("tfidf", TfidfTransformer(use_idf=self.use_idf)),
