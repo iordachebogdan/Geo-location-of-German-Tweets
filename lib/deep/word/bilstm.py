@@ -3,6 +3,7 @@ from tensorflow.keras import Sequential
 from tensorflow.keras.layers import Embedding, Bidirectional, LSTM, Dense, Dropout
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 from tensorflow.keras.models import load_model
+import tensorflow as tf
 
 
 class BiLSTM:
@@ -62,6 +63,8 @@ class BiLSTM:
     ):
         training_inputs = self.encoder(training_inputs)
         validation_inputs = self.encoder(validation_inputs)
+        training_labels = tf.convert_to_tensor(training_labels, dtype=tf.float32)
+        validation_labels = tf.convert_to_tensor(validation_labels, dtype=tf.float32)
         es = EarlyStopping(monitor="val_loss", mode="min", verbose=1, patience=5)
         mc = ModelCheckpoint(
             "checkpoints/best.h5",
