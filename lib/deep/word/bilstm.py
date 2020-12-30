@@ -2,8 +2,6 @@ from tensorflow.keras.layers.experimental.preprocessing import TextVectorization
 from tensorflow.keras import Sequential
 from tensorflow.keras.layers import Embedding, Bidirectional, LSTM, Dense, Dropout
 
-from lib.preprocessing.cleaning import clean
-
 
 class BiLSTM:
     def __init__(
@@ -23,7 +21,7 @@ class BiLSTM:
         self.loss = loss or (
             "categorical_crossentropy" if num_of_classes > 1 else "MSE"
         )
-        encoder = TextVectorization(max_tokens=vocab_size, standardize=clean)
+        encoder = TextVectorization(max_tokens=vocab_size, standardize=None)
         print("Fitting text vectorizer...")
         encoder.adapt(train_texts)
         print("Building model...")

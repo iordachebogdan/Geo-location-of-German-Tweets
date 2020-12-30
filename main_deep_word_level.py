@@ -8,6 +8,8 @@ import numpy as np
 from lib.utils.dataset_utils import load_data
 from lib.utils.eval_utils import mae_coordinates
 from lib.deep.word.bilstm import BiLSTM
+from lib.preprocessing.cleaning import clean
+
 
 parser = argparse.ArgumentParser(description="Word level deep learning")
 parser.add_argument(
@@ -27,6 +29,10 @@ def main():
     df_train, df_val, df_test = load_data()
     df_results = pd.DataFrame()
     df_results["id"] = df_test.id
+
+    df_train.text = [clean(t) for t in df_train.text]
+    df_val.text = [clean(t) for t in df_val.text]
+    df_test.text = [clean(t) for t in df_test.text]
 
     if config["method"] == "regression":
         print("Training model for LAT")
