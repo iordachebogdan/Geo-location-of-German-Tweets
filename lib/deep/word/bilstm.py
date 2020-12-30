@@ -23,14 +23,13 @@ class BiLSTM:
         self.loss = loss or (
             "categorical_crossentropy" if num_of_classes > 1 else "MSE"
         )
-        encoder = TextVectorization(max_tokens=vocab_size, standardize=None)
+        self.encoder = TextVectorization(max_tokens=vocab_size, standardize=None)
         print("Fitting text vectorizer...")
-        encoder.adapt(train_texts)
+        self.encoder.adapt(train_texts)
         print("Building model...")
         sequence = [
-            encoder,
             Embedding(
-                input_dim=len(encoder.get_vocabulary()),
+                input_dim=len(self.encoder.get_vocabulary()),
                 output_dim=embedding_size,
                 mask_zero=True,
             ),
@@ -61,6 +60,8 @@ class BiLSTM:
         epochs,
         batch_size,
     ):
+        training_inputs = self.encoder(training_inputs)
+        validation_inputs = self.encoder(validation_inputs)
         es = EarlyStopping(monitor="val_loss", mode="min", verbose=1, patience=5)
         mc = ModelCheckpoint(
             "checkpoints/best.h5",
@@ -80,4 +81,5 @@ class BiLSTM:
         self.model = load_model("checkpoints/best.h5")
 
     def predict(self, testing_inputs, batch_size):
+        testing_inputs = self.encoder(testing_inputs)
         return self.model.predict(testing_inputs, batch_size=batch_size, verbose=1)
