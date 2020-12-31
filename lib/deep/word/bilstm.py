@@ -1,6 +1,12 @@
 from tensorflow.keras.layers.experimental.preprocessing import TextVectorization
 from tensorflow.keras import Sequential
-from tensorflow.keras.layers import Embedding, Bidirectional, LSTM, Dense, Dropout
+from tensorflow.keras.layers import (
+    Embedding,
+    Bidirectional,
+    LSTM,
+    Dense,
+    BatchNormalization,
+)
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 from tensorflow.keras.models import load_model
 import tensorflow as tf
@@ -15,7 +21,6 @@ class BiLSTM:
         embedding_size=600,
         hidden_dim=600,
         clf_dim=1024,
-        dropout_p=0.5,
         optimizer="adam",
         loss=None,
         word_embeddings=None,
@@ -45,7 +50,7 @@ class BiLSTM:
         ]
         for dim in clf_dim:
             sequence.append(Dense(dim, activation="relu"))
-            sequence.append(Dropout(dropout_p))
+            sequence.append(BatchNormalization())
         sequence.append(
             Dense(
                 self.num_of_classes,

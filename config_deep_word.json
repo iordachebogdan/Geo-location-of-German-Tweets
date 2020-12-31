@@ -14,7 +14,6 @@
             1024,
             1024
         ],
-        "dropout_p": 0.3,
         "optimizer": "adam",
         "loss": "MAE"
     },
