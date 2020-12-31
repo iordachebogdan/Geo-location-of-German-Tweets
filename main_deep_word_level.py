@@ -8,6 +8,7 @@ import numpy as np
 from lib.utils.dataset_utils import load_data
 from lib.utils.eval_utils import mae_coordinates
 from lib.deep.word.bilstm import BiLSTM
+from lib.deep.word.word_embeddings import Word2VecEmbeddings
 from lib.preprocessing.cleaning import clean
 
 
@@ -34,10 +35,19 @@ def main():
     df_val.text = [clean(t) for t in df_val.text]
     df_test.text = [clean(t) for t in df_test.text]
 
+    word_embeddings = None
+    if "word2vec" in config:
+        word_embeddings = Word2VecEmbeddings(
+            list(df_train.text) + list(df_val.text) + list(df_test.text),
+            **config["word2vec"],
+        )
+
     if config["method"] == "regression":
         print("Training model for LAT")
 
-        model_lat = BiLSTM(list(df_train.text), **config["model"])
+        model_lat = BiLSTM(
+            list(df_train.text), word_embeddings=word_embeddings, **config["model"]
+        )
         model_lat.train(
             list(df_train.text),
             list(df_train.lat),
@@ -57,7 +67,9 @@ def main():
         )
 
         print("Training model for LONG")
-        model_long = BiLSTM(list(df_train.text), **config["model"])
+        model_long = BiLSTM(
+            list(df_train.text), word_embeddings=word_embeddings, **config["model"]
+        )
         model_long.train(
             list(df_train.text),
             list(df_train.long),

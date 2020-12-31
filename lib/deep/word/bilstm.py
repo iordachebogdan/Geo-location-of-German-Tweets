@@ -18,6 +18,7 @@ class BiLSTM:
         dropout_p=0.5,
         optimizer="adam",
         loss=None,
+        word_embeddings=None,
     ):
         self.num_of_classes = num_of_classes
         self.optimizer = optimizer
@@ -33,6 +34,11 @@ class BiLSTM:
                 input_dim=len(self.encoder.get_vocabulary()),
                 output_dim=embedding_size,
                 mask_zero=True,
+                weights=(
+                    None
+                    if word_embeddings is None
+                    else [word_embeddings.get_emb_matrix(self.encoder)]
+                ),
             ),
             Bidirectional(LSTM(hidden_dim)),
         ]
