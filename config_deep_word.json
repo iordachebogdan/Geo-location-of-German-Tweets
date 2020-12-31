@@ -9,7 +9,8 @@
             1024
         ],
         "dropout_p": 0,
-        "optimizer": "adam"
+        "optimizer": "adam",
+        "loss": "MAE"
     },
     "training": {
         "epochs": 20,
