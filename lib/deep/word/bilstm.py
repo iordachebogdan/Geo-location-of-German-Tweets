@@ -67,12 +67,13 @@ class BiLSTM:
         validation_labels,
         epochs,
         batch_size,
+        es,
     ):
         training_inputs = self.encoder(training_inputs)
         validation_inputs = self.encoder(validation_inputs)
         training_labels = tf.convert_to_tensor(training_labels, dtype=tf.float32)
         validation_labels = tf.convert_to_tensor(validation_labels, dtype=tf.float32)
-        es = EarlyStopping(monitor="val_loss", mode="min", verbose=1, patience=5)
+        es = EarlyStopping(monitor="val_loss", mode="min", verbose=1, patience=es)
         mc = ModelCheckpoint(
             "checkpoints/best.h5",
             monitor="val_loss",

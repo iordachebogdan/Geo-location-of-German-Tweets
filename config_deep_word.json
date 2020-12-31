@@ -14,12 +14,13 @@
             1024,
             1024
         ],
-        "dropout_p": 0,
+        "dropout_p": 0.3,
         "optimizer": "adam",
         "loss": "MAE"
     },
     "training": {
-        "epochs": 20,
-        "batch_size": 16
+        "epochs": 50,
+        "batch_size": 16,
+        "es": 50
     }
 }
