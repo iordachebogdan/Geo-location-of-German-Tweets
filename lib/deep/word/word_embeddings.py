@@ -3,11 +3,11 @@ import numpy as np
 
 
 class Word2VecEmbeddings:
-    def __init__(self, texts, emb_size, min_count=1, iter=10):
+    def __init__(self, texts, emb_size, min_count=1, iter=10, sg=1):
         texts = [t.split() for t in texts]
         self.emb_size = emb_size
         self.model = gensim.models.Word2Vec(
-            texts, size=emb_size, min_count=min_count, iter=iter
+            texts, size=emb_size, min_count=min_count, iter=iter, sg=sg
         )
 
     def get_emb_matrix(self, text_vectorization):

@@ -1,13 +1,14 @@
 {
     "method": "regression",
     "word2vec": {
-        "emb_size": 300,
+        "emb_size": 600,
         "min_count": 1,
-        "iter": 10
+        "iter": 20,
+        "sg": 1
     },
     "model": {
         "vocab_size": 20000,
-        "embedding_size": 300,
+        "embedding_size": 600,
         "hidden_dim": 600,
         "clf_dim": [
             1024,

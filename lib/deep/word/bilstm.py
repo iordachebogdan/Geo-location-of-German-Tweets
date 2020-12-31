@@ -39,6 +39,7 @@ class BiLSTM:
                     if word_embeddings is None
                     else [word_embeddings.get_emb_matrix(self.encoder)]
                 ),
+                trainable=(word_embeddings is None),
             ),
             Bidirectional(LSTM(hidden_dim)),
         ]
