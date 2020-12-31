@@ -14,8 +14,8 @@
     },
     "algorithm": {
         "random_forest": {
-            "n_estimators": 100,
-            "criterion": "mae"
+            "n_estimators": 20,
+            "criterion": "mse"
         }
     }
 }
