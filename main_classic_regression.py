@@ -8,6 +8,8 @@ from sklearn.pipeline import Pipeline
 
 from lib.classic.regression.nusvr import NuSVR
 from lib.classic.regression.linearsvr import LinearSVR
+from lib.classic.regression.sgd import SGD
+from lib.classic.regression.random_forest import RandomForest
 
 from lib.preprocessing.cleaning import clean
 from lib.preprocessing.features import BOW
@@ -35,6 +37,10 @@ def build_regressor(config):
         return NuSVR(**config["nusvr"])
     elif "linearsvr" in config:
         return LinearSVR(**config["linearsvr"])
+    elif "sgd" in config:
+        return SGD(**config["sgd"])
+    elif "random_forest" in config:
+        return RandomForest(**config["random_forest"])
     else:
         raise Exception()
 
