@@ -121,7 +121,12 @@ def main():
         else:
             raise Exception("Method not implemented")
 
-        model = BiLSTM(train_text, word_embeddings=word_embeddings, **config["model"])
+        model = BiLSTM(
+            train_text,
+            num_of_classes=num_classes,
+            word_embeddings=word_embeddings,
+            **config["model"],
+        )
         model.train(
             train_text,
             train_labels,
