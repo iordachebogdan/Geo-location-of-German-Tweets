@@ -8,6 +8,7 @@ import numpy as np
 from lib.utils.dataset_utils import load_data
 from lib.utils.eval_utils import mae_coordinates
 from lib.deep.word.bilstm import BiLSTM
+from lib.deep.word.stacked_gru import StackedGRU
 from lib.deep.word.word_embeddings import Word2VecEmbeddings
 from lib.preprocessing.cleaning import clean
 from lib.utils.classification_utils import (
@@ -20,6 +21,25 @@ parser = argparse.ArgumentParser(description="Word level deep learning")
 parser.add_argument(
     "--config", help="path to configuration file", default="./config_deep_word.json"
 )
+
+
+def init_model(config, train_texts, word_embeddings, num_classes=1):
+    if config["model_name"] == "bilstm":
+        return BiLSTM(
+            train_texts,
+            num_of_classes=num_classes,
+            word_embeddings=word_embeddings,
+            **config["model"],
+        )
+    elif config["model_name"] == "stacked_gru":
+        return StackedGRU(
+            train_texts,
+            num_of_classes=num_classes,
+            word_embeddings=word_embeddings,
+            **config["model"],
+        )
+    else:
+        raise Exception("Unknown model name")
 
 
 def main():
@@ -49,9 +69,7 @@ def main():
     if config["method"] == "regression":
         print("Training model for LAT")
 
-        model_lat = BiLSTM(
-            list(df_train.text), word_embeddings=word_embeddings, **config["model"]
-        )
+        model_lat = init_model(config, list(df_train.text), word_embeddings)
         model_lat.train(
             list(df_train.text),
             list(df_train.lat),
@@ -71,9 +89,8 @@ def main():
         )
 
         print("Training model for LONG")
-        model_long = BiLSTM(
-            list(df_train.text), word_embeddings=word_embeddings, **config["model"]
-        )
+        model_long = init_model(config, list(df_train.text), word_embeddings)
+
         model_long.train(
             list(df_train.text),
             list(df_train.long),
@@ -121,11 +138,8 @@ def main():
         else:
             raise Exception("Method not implemented")
 
-        model = BiLSTM(
-            train_text,
-            num_of_classes=num_classes,
-            word_embeddings=word_embeddings,
-            **config["model"],
+        model = init_model(
+            config, list(df_train.text), word_embeddings, num_classes=num_classes
         )
         model.train(
             train_text,

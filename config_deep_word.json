@@ -1,16 +1,19 @@
 {
     "method": "regression",
+    "model_name": "stacked_gru",
     "word2vec": {
-        "emb_size": 300,
+        "emb_size": 600,
         "min_count": 1,
         "iter": 20,
         "sg": 1
     },
     "model": {
-        "vocab_size": 20000,
-        "embedding_size": 300,
-        "hidden_dim": 300,
+        "vocab_size": 600,
+        "embedding_size": 600,
+        "hidden_dim": 600,
+        "num_layers": 3,
         "clf_dim": [
+            1024,
             1024
         ],
         "optimizer": "adam",
