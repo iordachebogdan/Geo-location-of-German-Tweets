@@ -114,3 +114,12 @@ class ClassificationOnKMeans(object):
         df["predict_long"] = [
             self.km.cluster_centers_[i][1] for i in df["predict_class"]
         ]
+
+
+def class_labels_to_onehot(labels, num_classes):
+    one_hot = np.eye(num_classes, dtype="int64")
+    onehot_labels = []
+    for label in labels:
+        label = int(label)
+        onehot_labels.append(one_hot[label])
+    return np.asarray(onehot_labels)

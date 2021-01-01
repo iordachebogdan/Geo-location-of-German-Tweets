@@ -10,6 +10,10 @@ from lib.utils.eval_utils import mae_coordinates
 from lib.deep.word.bilstm import BiLSTM
 from lib.deep.word.word_embeddings import Word2VecEmbeddings
 from lib.preprocessing.cleaning import clean
+from lib.utils.classification_utils import (
+    ClassificationOnKMeans,
+    class_labels_to_onehot,
+)
 
 
 parser = argparse.ArgumentParser(description="Word level deep learning")
@@ -98,6 +102,68 @@ def main():
         )
         print(f"TRAIN: {train_score}")
         print(f"VAL: {val_score}")
+    else:
+        if "kmeans" in config["classification"]:
+            num_classes = config["classification"]["kmeans"]["num_classes"]
+            cokm = ClassificationOnKMeans(df_train, num_classes)
+
+            train_text = list(df_train.text)
+            val_text = list(df_val.text)
+            test_text = list(df_test.text)
+
+            cokm.set_true_class(df_train)
+            cokm.set_true_class(df_val)
+
+            train_labels = class_labels_to_onehot(
+                list(df_train.true_class), num_classes
+            )
+            val_labels = class_labels_to_onehot(list(df_val.true_class), num_classes)
+        else:
+            raise Exception("Method not implemented")
+
+        model = BiLSTM(train_text, word_embeddings=word_embeddings, **config["model"])
+        model.train(
+            train_text,
+            train_labels,
+            val_text,
+            val_labels,
+            **config["training"],
+        )
+
+        train_predicted_classes = model.predict(
+            train_text, config["training"]["batch_size"]
+        )
+        train_predicted_classes = np.argmax(train_predicted_classes, axis=1)
+        val_predicted_classes = model.predict(
+            val_text, config["training"]["batch_size"]
+        )
+        val_predicted_classes = np.argmax(val_predicted_classes, axis=1)
+        test_predicted_classes = model.predict(
+            test_text, config["training"]["batch_size"]
+        )
+        test_predicted_classes = np.argmax(test_predicted_classes, axis=1)
+
+        df_train["predict_class"] = train_predicted_classes
+        df_val["predict_class"] = val_predicted_classes
+        df_test["predict_class"] = test_predicted_classes
+
+        cokm.set_predicted_coords(df_train)
+        cokm.set_predicted_coords(df_val)
+        cokm.set_predicted_coords(df_test)
+
+        train_score = mae_coordinates(
+            np.column_stack([df_train["lat"], df_train["long"]]),
+            np.column_stack([df_train["predict_lat"], df_train["predict_long"]]),
+        )
+        val_score = mae_coordinates(
+            np.column_stack([df_val["lat"], df_val["long"]]),
+            np.column_stack([df_val["predict_lat"], df_val["predict_long"]]),
+        )
+        print(f"TRAIN: {train_score}")
+        print(f"VAL: {val_score}")
+
+        df_results["lat"] = df_test["predict_lat"]
+        df_results["long"] = df_test["predict_long"]
 
     df_results.to_csv(results_path + "/test_results.csv", index=False)
 

@@ -5,7 +5,7 @@ from tensorflow.keras.layers import (
     Bidirectional,
     LSTM,
     Dense,
-    BatchNormalization,
+    Dropout,
 )
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 from tensorflow.keras.models import load_model
@@ -20,6 +20,7 @@ class BiLSTM:
         vocab_size=10000,
         embedding_size=600,
         hidden_dim=600,
+        dropout_p=0,
         clf_dim=1024,
         optimizer="adam",
         loss=None,
@@ -50,7 +51,7 @@ class BiLSTM:
         ]
         for dim in clf_dim:
             sequence.append(Dense(dim, activation="relu"))
-            sequence.append(BatchNormalization())
+            sequence.append(Dropout(dropout_p))
         sequence.append(
             Dense(
                 self.num_of_classes,

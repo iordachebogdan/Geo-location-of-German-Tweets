@@ -1,5 +1,10 @@
 {
-    "method": "regression",
+    "method": "classification",
+    "classification": {
+        "kmeans": {
+            "num_classes": 10
+        }
+    },
     "word2vec": {
         "emb_size": 600,
         "min_count": 1,
@@ -14,12 +19,11 @@
             1024,
             1024
         ],
-        "optimizer": "adam",
-        "loss": "MAE"
+        "optimizer": "adam"
     },
     "training": {
-        "epochs": 50,
+        "epochs": 20,
         "batch_size": 16,
-        "es": 50
+        "es": 5
     }
 }
