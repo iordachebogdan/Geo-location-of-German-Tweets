@@ -8,7 +8,7 @@
         "sg": 1
     },
     "model": {
-        "vocab_size": 600,
+        "vocab_size": 20000,
         "embedding_size": 600,
         "hidden_dim": 600,
         "num_layers": 3,
