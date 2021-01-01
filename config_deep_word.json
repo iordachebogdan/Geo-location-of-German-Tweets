@@ -1,25 +1,20 @@
 {
-    "method": "classification",
-    "classification": {
-        "kmeans": {
-            "num_classes": 10
-        }
-    },
+    "method": "regression",
     "word2vec": {
-        "emb_size": 600,
+        "emb_size": 300,
         "min_count": 1,
         "iter": 20,
         "sg": 1
     },
     "model": {
         "vocab_size": 20000,
-        "embedding_size": 600,
-        "hidden_dim": 600,
+        "embedding_size": 300,
+        "hidden_dim": 300,
         "clf_dim": [
-            1024,
             1024
         ],
-        "optimizer": "adam"
+        "optimizer": "adam",
+        "loss": "MAE"
     },
     "training": {
         "epochs": 20,
