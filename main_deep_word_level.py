@@ -88,6 +88,8 @@ def main():
             list(df_test.text), config["training"]["batch_size"]
         )
 
+        df_results.to_csv(results_path + "/LAT_test_results.csv", index=False)
+
         print("Training model for LONG")
         model_long = init_model(config, list(df_train.text), word_embeddings)
 
@@ -108,6 +110,8 @@ def main():
         df_results["long"] = model_long.predict(
             list(df_test.text), config["training"]["batch_size"]
         )
+
+        df_results.to_csv(results_path + "/LONG_test_results.csv", index=False)
 
         train_score = mae_coordinates(
             np.column_stack([df_train["lat"], df_train["long"]]),
