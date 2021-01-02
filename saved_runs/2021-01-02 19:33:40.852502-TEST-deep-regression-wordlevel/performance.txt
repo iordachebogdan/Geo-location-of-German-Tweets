@@ -1,0 +1,112 @@
+Fitting text vectorizer...
+Building model...
+99.99% coverage from Word2Vec
+2021-01-02 19:41:33.956178: I tensorflow/compiler/mlir/mlir_graph_optimization_pass.cc:116] None of the MLIR optimization passes are enabled (registered 2)
+2021-01-02 19:41:33.958886: I tensorflow/core/platform/profile_utils/cpu_utils.cc:112] CPU Frequency: 2200000000 Hz
+Epoch 1/20
+2021-01-02 19:41:35.271199: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcublas.so.10
+1412/1412 [==============================] - 543s 382ms/step - loss: 2.9507 - val_loss: 2.0200
+
+Epoch 00001: val_loss improved from inf to 2.01998, saving model to checkpoints/best.h5
+Epoch 2/20
+1412/1412 [==============================] - 547s 387ms/step - loss: 0.9029 - val_loss: 0.5200
+
+Epoch 00002: val_loss improved from 2.01998 to 0.52004, saving model to checkpoints/best.h5
+Epoch 3/20
+1412/1412 [==============================] - 558s 395ms/step - loss: 0.7675 - val_loss: 0.5613
+
+Epoch 00003: val_loss did not improve from 0.52004
+Epoch 4/20
+1412/1412 [==============================] - 546s 387ms/step - loss: 0.7483 - val_loss: 1.0041
+
+Epoch 00004: val_loss did not improve from 0.52004
+Epoch 5/20
+1412/1412 [==============================] - 540s 383ms/step - loss: 0.6596 - val_loss: 0.5585
+
+Epoch 00005: val_loss did not improve from 0.52004
+Epoch 6/20
+1412/1412 [==============================] - 531s 376ms/step - loss: 0.6406 - val_loss: 0.4924
+
+Epoch 00006: val_loss improved from 0.52004 to 0.49238, saving model to checkpoints/best.h5
+Epoch 7/20
+1412/1412 [==============================] - 525s 372ms/step - loss: 0.6039 - val_loss: 0.5520
+
+Epoch 00007: val_loss did not improve from 0.49238
+Epoch 8/20
+1412/1412 [==============================] - 513s 364ms/step - loss: 0.6313 - val_loss: 0.7043
+
+Epoch 00008: val_loss did not improve from 0.49238
+Epoch 9/20
+1412/1412 [==============================] - 512s 363ms/step - loss: 0.6111 - val_loss: 0.5801
+
+Epoch 00009: val_loss did not improve from 0.49238
+Epoch 10/20
+1412/1412 [==============================] - 512s 363ms/step - loss: 0.5867 - val_loss: 0.6123
+
+Epoch 00010: val_loss did not improve from 0.49238
+Epoch 11/20
+1412/1412 [==============================] - 507s 359ms/step - loss: 0.5702 - val_loss: 0.7437
+
+Epoch 00011: val_loss did not improve from 0.49238
+Epoch 00011: early stopping
+1412/1412 [==============================] - 47s 33ms/step
+191/191 [==============================] - 5s 27ms/step
+197/197 [==============================] - 6s 28ms/step
+Training model for LONG
+Fitting text vectorizer...
+Building model...
+99.99% coverage from Word2Vec
+Epoch 1/20
+1412/1412 [==============================] - 524s 370ms/step - loss: 1.1578 - val_loss: 0.6003
+
+Epoch 00001: val_loss improved from inf to 0.60032, saving model to checkpoints/best.h5
+Epoch 2/20
+1412/1412 [==============================] - 520s 368ms/step - loss: 0.6605 - val_loss: 0.6076
+
+Epoch 00002: val_loss did not improve from 0.60032
+Epoch 3/20
+1412/1412 [==============================] - 519s 368ms/step - loss: 0.5748 - val_loss: 0.6045
+
+Epoch 00003: val_loss did not improve from 0.60032
+Epoch 4/20
+1412/1412 [==============================] - 516s 365ms/step - loss: 0.5312 - val_loss: 0.6802
+
+Epoch 00004: val_loss did not improve from 0.60032
+Epoch 5/20
+1412/1412 [==============================] - 528s 374ms/step - loss: 0.4985 - val_loss: 0.5296
+
+Epoch 00005: val_loss improved from 0.60032 to 0.52957, saving model to checkpoints/best.h5
+Epoch 6/20
+1412/1412 [==============================] - 530s 375ms/step - loss: 0.4712 - val_loss: 0.6966
+
+Epoch 00006: val_loss did not improve from 0.52957
+Epoch 7/20
+1412/1412 [==============================] - 531s 376ms/step - loss: 0.4530 - val_loss: 0.5026
+
+Epoch 00007: val_loss improved from 0.52957 to 0.50256, saving model to checkpoints/best.h5
+Epoch 8/20
+1412/1412 [==============================] - 525s 372ms/step - loss: 0.4296 - val_loss: 0.5162
+
+Epoch 00008: val_loss did not improve from 0.50256
+Epoch 9/20
+1412/1412 [==============================] - 547s 388ms/step - loss: 0.4126 - val_loss: 0.5213
+
+Epoch 00009: val_loss did not improve from 0.50256
+Epoch 10/20
+1412/1412 [==============================] - 544s 385ms/step - loss: 0.3826 - val_loss: 0.5145
+
+Epoch 00010: val_loss did not improve from 0.50256
+Epoch 11/20
+1412/1412 [==============================] - 552s 391ms/step - loss: 0.3690 - val_loss: 0.5249
+
+Epoch 00011: val_loss did not improve from 0.50256
+Epoch 12/20
+1412/1412 [==============================] - 563s 399ms/step - loss: 0.3541 - val_loss: 0.5888
+
+Epoch 00012: val_loss did not improve from 0.50256
+Epoch 00012: early stopping
+1412/1412 [==============================] - 51s 36ms/step
+191/191 [==============================] - 6s 30ms/step
+197/197 [==============================] - 6s 31ms/step
+TRAIN: 0.45755062774672006
+VAL: 0.4974717215310608
