@@ -189,6 +189,7 @@ def main():
         df_results["long"] = df_test["predict_long"]
 
     df_results.to_csv(results_path + "/test_results.csv", index=False)
+    df_val.to_csv(results_path + "/val_results.csv", index=False)
 
 
 if __name__ == "__main__":
