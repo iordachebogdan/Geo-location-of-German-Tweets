@@ -8,3 +8,8 @@ def mae_coordinates(true, predicted):
 
 def class_accuracy(true, predicted):
     return (np.array(true) == np.array(predicted)).mean()
+
+
+def mse_coordinates(true, predicted):
+    mse = np.square(true - predicted).mean(axis=0)
+    return (mse[0] + mse[1]) / 2
