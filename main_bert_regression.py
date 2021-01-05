@@ -1,3 +1,5 @@
+"""Regression using pretrained German BERT model"""
+
 import argparse
 from datetime import datetime
 import os
@@ -11,7 +13,7 @@ from torchtext.data import Field, TabularDataset, Iterator
 
 from lib.utils.average_meter import AverageMeter
 
-parser = argparse.ArgumentParser(description="Regression using deep learning")
+parser = argparse.ArgumentParser(description="Regression using BERT")
 parser.add_argument(
     "--config", help="path to configuration file", default="./config.json"
 )
@@ -21,6 +23,7 @@ class BertForCoordinatesPrediction(nn.Module):
     def __init__(self, pad_index):
         super().__init__()
         self.pad_index = pad_index
+        # define two models for lat and long
         self.bert_lat = BertForSequenceClassification.from_pretrained(
             "bert-base-german-cased", num_labels=1
         )
@@ -29,17 +32,23 @@ class BertForCoordinatesPrediction(nn.Module):
         )
 
     def forward(self, sentences):
+        # get attantion masks in order to ignore padding
         masks = sentences != self.pad_index
         output_lat = self.bert_lat(input_ids=sentences, attention_mask=masks)[0]
         output_lat = output_lat.view(-1)
         output_long = self.bert_long(input_ids=sentences, attention_mask=masks)[0]
         output_long = output_long.view(-1)
+        # combine output
         output = torch.vstack((output_lat, output_long)).T
         return output
 
 
 def train(model, train_loader, criterion, optimizer, epoch, print_freq=20):
+    # one epoch training loop
+
+    # set model to training mode
     model.train()
+    # compute statistics for time, loss and score
     batch_time = AverageMeter()
     data_time = AverageMeter()
     losses = AverageMeter()
@@ -49,6 +58,7 @@ def train(model, train_loader, criterion, optimizer, epoch, print_freq=20):
 
     start = time.time()
     for i, data in enumerate(train_loader):
+        # make predictions for current batch
         data_time.update(time.time() - start)
 
         idx, latitude, longitude, (x, _) = (
@@ -60,12 +70,14 @@ def train(model, train_loader, criterion, optimizer, epoch, print_freq=20):
         coords = torch.vstack((latitude, longitude)).T
         predict_coords = model(x)
 
+        # compute loss and backpropagate
         loss = criterion(predict_coords, coords)
         losses.update(loss.data)
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
 
+        # update scores and store predictions
         for j in range(coords.size(0)):
             score_lat.update(abs(coords[j][0] - predict_coords[j][0]))
             score_long.update(abs(coords[j][1] - predict_coords[j][1]))
@@ -81,6 +93,7 @@ def train(model, train_loader, criterion, optimizer, epoch, print_freq=20):
         batch_time.update(time.time() - start)
         start = time.time()
 
+        # print statistics from time to time
         if i % print_freq == 0:
             print(
                 f"Epoch: [{epoch}][{i+1}/{len(train_loader)}]\t"
@@ -93,6 +106,9 @@ def train(model, train_loader, criterion, optimizer, epoch, print_freq=20):
 
 
 def validate(model, dev_loader, criterion, epoch, print_freq=20):
+    # validation loop for one epoch
+
+    # statistics
     batch_time = AverageMeter()
     data_time = AverageMeter()
     losses = AverageMeter()
@@ -100,12 +116,14 @@ def validate(model, dev_loader, criterion, epoch, print_freq=20):
     score_long = AverageMeter()
     df_predictions = pd.DataFrame()
 
+    # put model in evaluation mode
     model.eval()
     with torch.no_grad():
         start = time.time()
         for i, data in enumerate(dev_loader):
             data_time.update(time.time() - start)
 
+            # make predictions
             idx, latitude, longitude, (x, _) = (
                 data.id,
                 data.lat,
@@ -115,6 +133,7 @@ def validate(model, dev_loader, criterion, epoch, print_freq=20):
             coords = torch.vstack((latitude, longitude)).T
             predict_coords = model(x)
 
+            # compute statistics and store predictions
             loss = criterion(predict_coords, coords)
             losses.update(loss.data)
 
@@ -133,6 +152,7 @@ def validate(model, dev_loader, criterion, epoch, print_freq=20):
             batch_time.update(time.time() - start)
             start = time.time()
 
+            # print statistics from time to time
             if i % print_freq == 0:
                 print(
                     f"VALIDATION Epoch: [{epoch}][{i+1}/{len(dev_loader)}]\t"
@@ -145,16 +165,19 @@ def validate(model, dev_loader, criterion, epoch, print_freq=20):
 
 
 def test(model, test_loader, epoch, print_freq=20):
+    # make predictions on the test set
     batch_time = AverageMeter()
     data_time = AverageMeter()
     df_predictions = pd.DataFrame()
 
+    # put model in eval mode
     model.eval()
     with torch.no_grad():
         start = time.time()
         for i, data in enumerate(test_loader):
             data_time.update(time.time() - start)
 
+            # make and store predictions for the test set
             idx, (x, _) = data.id, data.text
             predict_coords = model(x)
 
@@ -171,6 +194,7 @@ def test(model, test_loader, epoch, print_freq=20):
             batch_time.update(time.time() - start)
             start = time.time()
 
+            # print statistics from time to time
             if i % print_freq == 0:
                 print(
                     f"TEST Epoch: [{epoch}][{i+1}/{len(test_loader)}]\t"
@@ -182,6 +206,7 @@ def test(model, test_loader, epoch, print_freq=20):
 
 def main():
     args = parser.parse_args()
+    # set cuda device if available
     if torch.cuda.is_available():
         args.device = torch.device("cuda")
         args.use_gpu = True
@@ -191,6 +216,7 @@ def main():
         args.use_gpu = False
         print("Using CPU")
 
+    # use pretrained tokenizer
     tokenizer = BertTokenizer.from_pretrained("bert-base-german-cased")
 
     MAX_LEN = 64
@@ -198,6 +224,7 @@ def main():
     UNK_INDEX = tokenizer.unk_token_id
     INIT_INDEX = tokenizer.cls_token_id
 
+    # define torchtext fields
     id_field = Field(sequential=False, use_vocab=False, batch_first=True)
     lat_field = Field(
         sequential=False, use_vocab=False, batch_first=True, dtype=torch.float
@@ -228,6 +255,7 @@ def main():
         ("text", text_field),
     ]
 
+    # define torchtext datasets
     train_set, dev_set = TabularDataset.splits(
         path="data/",
         train="training.txt",
@@ -239,6 +267,7 @@ def main():
 
     BATCH_SIZE = 16
 
+    # build dataset iterators
     train_loader = Iterator(
         train_set,
         batch_size=BATCH_SIZE,
@@ -263,10 +292,12 @@ def main():
         sort=False,
     )
 
+    # initialize model and optimizer, define loss function
     model = BertForCoordinatesPrediction(pad_index=PAD_INDEX).to(args.device)
     optimizer = optim.Adam(model.parameters(), lr=5e-5)
     criterion = nn.MSELoss()
 
+    # results directory
     results_path = f"runs/{datetime.now()}-TEST-deep-regression-BERT"
     os.mkdir(results_path)
     df_performance = pd.DataFrame()
@@ -274,6 +305,7 @@ def main():
     NUM_EPOCHS = 7
     best_loss = float("inf")
     for epoch in range(1, NUM_EPOCHS + 1):
+        # train for NUM_EPOCHS
         train_score, train_loss, train_df_predict = train(
             model, train_loader, criterion, optimizer, epoch
         )
@@ -295,6 +327,7 @@ def main():
         )
 
         if best_loss > dev_loss:
+            # if validation loss is imporved, run on test data and save predictions
             best_loss = dev_loss
             print(f"BEST EPOCH WITH LOSS {best_loss}. RUNNING ON TEST...")
             test_df_predict = test(model, test_loader, epoch)

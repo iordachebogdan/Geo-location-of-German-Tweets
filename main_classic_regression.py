@@ -1,3 +1,4 @@
+"""Entry point for regression task using sklearn methods"""
 import argparse
 from datetime import datetime
 import json
@@ -53,11 +54,14 @@ def build_pipeline(representation, regressor):
 
 def main():
     args = parser.parse_args()
+    # read configuration dict
     config = {}
     with open(args.config) as f:
         config = json.load(f)
 
+    # expand configuration dict for parameter grid search
     configs = expand_config(config)
+    # create results directory
     results_path = (
         f'runs/{datetime.now()}-{"TEST-" if args.test else ""}{config["type"]}'
         f'-{config["method"]}-{list(config["algorithm"].keys())[0]}'
@@ -65,37 +69,44 @@ def main():
     os.mkdir(results_path)
     df_performance = pd.DataFrame()
     for i, config in enumerate(configs):
+        # run each configuration
         print(f"Running {i+1}/{len(configs)}")
         current_results_path = os.path.join(results_path, str(i))
         os.mkdir(current_results_path)
         with open(current_results_path + "/config.json", "w") as f:
             json.dump(config, f, indent=4)
 
+        # build the regression pipeline using instructions from the config dict
         representation = build_representation(config["representation"])
         regressor = build_regressor(config["algorithm"])
         pipeline_lat = build_pipeline(representation, regressor)
         pipeline_long = build_pipeline(representation, regressor)
 
+        # load train, dev sets
         df_train, df_val, df_test = load_data()
         if args.test:
             df_train = pd.concat([df_train, df_val])
             df_train = shuffle_df(df_train)
             df_val = df_test
 
+        # clean the texts
         for df in [df_train, df_val]:
             df["clean_text"] = [clean(text) for text in df["text"]]
 
+        # fit regressors
         print("Fitting latitude...")
         pipeline_lat.fit(df_train["clean_text"], df_train["lat"])
         print("Fitting longitude...")
         pipeline_long.fit(df_train["clean_text"], df_train["long"])
 
+        # predict coordinates for train and val sets
         predict_train_lat = pipeline_lat.predict(df_train["clean_text"])
         predict_train_long = pipeline_long.predict(df_train["clean_text"])
 
         predict_val_lat = pipeline_lat.predict(df_val["clean_text"])
         predict_val_long = pipeline_long.predict(df_val["clean_text"])
 
+        # compute MAE for train and val
         true_train = np.column_stack([df_train["lat"], df_train["long"]])
         predict_train = np.column_stack([predict_train_lat, predict_train_long])
         mae_train = mae_coordinates(true_train, predict_train)
@@ -114,6 +125,7 @@ def main():
         df_val["predict_lat"] = predict_val_lat
         df_val["predict_long"] = predict_val_long
 
+        # store test predictions
         if args.test:
             df_res = pd.DataFrame()
             df_res["id"] = df_val["id"]
@@ -121,6 +133,7 @@ def main():
             df_res["long"] = df_val["predict_long"]
             df_res.to_csv(current_results_path + "/test_results.csv", index=False)
 
+        # performance for current config
         df_performance = df_performance.append(
             {
                 **representation.get_config(),

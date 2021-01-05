@@ -1,3 +1,4 @@
+"""Entry point for regression task using string kernels"""
 import argparse
 from datetime import datetime
 import numpy as np
@@ -11,7 +12,7 @@ from lib.preprocessing.features import StringKernelPresenceBits
 from lib.utils.dataset_utils import load_data, shuffle_df
 from lib.utils.eval_utils import mae_coordinates
 
-parser = argparse.ArgumentParser(description="Classic ML algorithms for regression")
+parser = argparse.ArgumentParser(description="String kernels for regression")
 parser.add_argument(
     "--kernel", help="path to kernel", default="./string-kernel-data/presence_3_5.txt"
 )
@@ -25,18 +26,21 @@ parser.add_argument("--test", action="store_true")
 
 def main():
     args = parser.parse_args()
+    # create results directory
     results_path = (
         f'runs/{datetime.now()}-{"TEST-" if args.test else ""}{"string_kernel"}'
         f'-{args.kernel.split("/")[-1]}'
     )
     os.mkdir(results_path)
 
+    # load train, val, test datasets
     df_train, df_val, df_test = load_data()
     if args.test:
         df_train = pd.concat([df_train, df_val])
         df_train = shuffle_df(df_train)
         df_val = df_test
 
+    # features are now just the ids of the tweets
     features_train = np.array([[i] for i in df_train["id"]])
     features_val = np.array([[i] for i in df_val["id"]])
 
@@ -45,6 +49,7 @@ def main():
     df_performance = pd.DataFrame()
     for c in [0.0001, 0.001, 0.01, 0.1, 1, 10, 100]:
         for nu in [0.1, 0.3, 0.5, 0.7, 0.9]:
+            # fit regressors with different parameters
             regressor_builder = NuSVR(c, nu, kernel)
             print("Fitting latitude...")
             regressor_lat = regressor_builder.get_regressor()
@@ -59,6 +64,7 @@ def main():
             predict_train_long = regressor_long.predict(features_train)
             predict_val_long = regressor_long.predict(features_val)
 
+            # compute MAE for train and val predictions
             true_train = np.column_stack([df_train["lat"], df_train["long"]])
             predict_train = np.column_stack([predict_train_lat, predict_train_long])
             mae_train = mae_coordinates(true_train, predict_train)
@@ -70,6 +76,7 @@ def main():
             print(f"Prediction accuracy TRAIN: {mae_train}")
             print(f"Prediction accuracy VALIDATION: {mae_val}")
 
+            # store test predictions
             if args.test:
                 df_res = pd.DataFrame()
                 df_res["id"] = df_val["id"]
@@ -77,6 +84,7 @@ def main():
                 df_res["long"] = df_val["predict_long"]
                 df_res.to_csv(results_path + "/test_results.csv", index=False)
 
+            # store current configuration performance
             df_performance = df_performance.append(
                 {
                     "c": c,

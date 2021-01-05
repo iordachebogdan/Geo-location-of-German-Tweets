@@ -1,3 +1,4 @@
+"""Deep neural networks methods"""
 import argparse
 from datetime import datetime
 import os
@@ -24,6 +25,7 @@ parser.add_argument(
 
 
 def init_model(config, train_texts, word_embeddings, num_classes=1):
+    """Initialize model based on config dict"""
     if config["model_name"] == "bilstm":
         return BiLSTM(
             train_texts,
@@ -44,29 +46,35 @@ def init_model(config, train_texts, word_embeddings, num_classes=1):
 
 def main():
     args = parser.parse_args()
+    # read config dict
     config = {}
     with open(args.config) as f:
         config = json.load(f)
 
+    # create results directory
     results_path = f"runs/{datetime.now()}-TEST-deep-{config['method']}-wordlevel"
     os.mkdir(results_path)
 
+    # load datasets
     df_train, df_val, df_test = load_data()
     df_results = pd.DataFrame()
     df_results["id"] = df_test.id
 
+    # clean texts
     df_train.text = [clean(t) for t in df_train.text]
     df_val.text = [clean(t) for t in df_val.text]
     df_test.text = [clean(t) for t in df_test.text]
 
     word_embeddings = None
     if "word2vec" in config:
+        # train word2vec embeddings
         word_embeddings = Word2VecEmbeddings(
             list(df_train.text) + list(df_val.text) + list(df_test.text),
             **config["word2vec"],
         )
 
     if config["method"] == "regression":
+        # regression pipeline
         print("Training model for LAT")
 
         model_lat = init_model(config, list(df_train.text), word_embeddings)
@@ -113,6 +121,7 @@ def main():
 
         df_results.to_csv(results_path + "/LONG_test_results.csv", index=False)
 
+        # compute scores on train and val datasets
         train_score = mae_coordinates(
             np.column_stack([df_train["lat"], df_train["long"]]),
             np.column_stack([df_train["predicted_lat"], df_train["predicted_long"]]),
@@ -124,7 +133,9 @@ def main():
         print(f"TRAIN: {train_score}")
         print(f"VAL: {val_score}")
     else:
+        # classification pipeline
         if "kmeans" in config["classification"]:
+            # use kmeans clustering for defining classes
             num_classes = config["classification"]["kmeans"]["num_classes"]
             cokm = ClassificationOnKMeans(df_train, num_classes)
 
@@ -132,6 +143,7 @@ def main():
             val_text = list(df_val.text)
             test_text = list(df_test.text)
 
+            # set gold labels
             cokm.set_true_class(df_train)
             cokm.set_true_class(df_val)
 
@@ -142,6 +154,7 @@ def main():
         else:
             raise Exception("Method not implemented")
 
+        # train classification model
         model = init_model(
             config, list(df_train.text), word_embeddings, num_classes=num_classes
         )
@@ -166,14 +179,17 @@ def main():
         )
         test_predicted_classes = np.argmax(test_predicted_classes, axis=1)
 
+        # set predicted classes
         df_train["predict_class"] = train_predicted_classes
         df_val["predict_class"] = val_predicted_classes
         df_test["predict_class"] = test_predicted_classes
 
+        # get predicted coords from predicted classes
         cokm.set_predicted_coords(df_train)
         cokm.set_predicted_coords(df_val)
         cokm.set_predicted_coords(df_test)
 
+        # compute scores for train and val
         train_score = mae_coordinates(
             np.column_stack([df_train["lat"], df_train["long"]]),
             np.column_stack([df_train["predict_lat"], df_train["predict_long"]]),
@@ -188,6 +204,7 @@ def main():
         df_results["lat"] = df_test["predict_lat"]
         df_results["long"] = df_test["predict_long"]
 
+    # store predictions for validation and test sets
     df_results.to_csv(results_path + "/test_results.csv", index=False)
     df_val.to_csv(results_path + "/val_results.csv", index=False)
 

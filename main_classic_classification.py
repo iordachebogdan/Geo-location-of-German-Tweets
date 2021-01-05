@@ -1,3 +1,4 @@
+"""Entry point for classification task using sklearn methods"""
 import argparse
 from datetime import datetime
 import json
@@ -58,11 +59,14 @@ def build_class_logic(config, df_train):
 
 def main():
     args = parser.parse_args()
+    # read configuration dict
     config = {}
     with open(args.config) as f:
         config = json.load(f)
 
+    # expand configuration dict for parameter grid search
     configs = expand_config(config)
+    # create results directory
     results_path = (
         f'runs/{datetime.now()}-{"TEST-" if args.test else ""}{config["type"]}'
         f'-{config["method"]}-{list(config["algorithm"].keys())[0]}'
@@ -70,39 +74,47 @@ def main():
     os.mkdir(results_path)
     df_performance = pd.DataFrame()
     for i, config in enumerate(configs):
+        # run each configuration
         print(f"Running {i+1}/{len(configs)}")
         current_results_path = os.path.join(results_path, str(i))
         os.mkdir(current_results_path)
         with open(current_results_path + "/config.json", "w") as f:
             json.dump(config, f, indent=4)
 
+        # build the classification pipeline using instructions from the config dict
         representation = build_representation(config["representation"])
         classifier = build_classifier(config["algorithm"])
         pipeline = build_pipeline(representation, classifier)
 
+        # load train, dev sets
         df_train, df_val, df_test = load_data()
         if args.test:
             df_train = pd.concat([df_train, df_val])
             df_train = shuffle_df(df_train)
             df_val = df_test
 
+        # generate classes and set gold labels
         class_logic = build_class_logic(config["class_logic"], df_train)
         class_logic.set_true_class(df_train)
         if not args.test:
             class_logic.set_true_class(df_val)
 
+        # clean the texts
         for df in [df_train, df_val]:
             df["clean_text"] = [clean(text) for text in df["text"]]
 
+        # train the classifier
         print("Fitting classifier...")
         pipeline.fit(df_train["clean_text"], df_train["true_class"])
 
         df_train["predict_class"] = pipeline.predict(df_train["clean_text"])
         df_val["predict_class"] = pipeline.predict(df_val["clean_text"])
 
+        # set predicted coords from predicted class labels
         class_logic.set_predicted_coords(df_train)
         class_logic.set_predicted_coords(df_val)
 
+        # compute MAE and accuracy for the train and validation sets
         true_train = np.column_stack([df_train["lat"], df_train["long"]])
         predict_train = np.column_stack(
             [df_train["predict_lat"], df_train["predict_long"]]
@@ -129,6 +141,7 @@ def main():
         print(f"Prediction accuracy TRAIN: {mae_train}")
         print(f"Prediction accuracy VALIDATION: {mae_val}")
 
+        # store test results if generated
         if args.test:
             df_res = pd.DataFrame()
             df_res["id"] = df_val["id"]
@@ -136,6 +149,7 @@ def main():
             df_res["long"] = df_val["predict_long"]
             df_res.to_csv(current_results_path + "/test_results.csv", index=False)
 
+        # performance for current config
         df_performance = df_performance.append(
             {
                 **representation.get_config(),

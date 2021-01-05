@@ -3,7 +3,16 @@ import numpy as np
 
 
 class Word2VecEmbeddings:
+    """Class that manages pretraining of Word2Vec embeddings"""
+
     def __init__(self, texts, emb_size, min_count=1, iter=10, sg=1):
+        """Parameters:
+        texts: list of str (cleaned texts)
+        emb_size: int (vector embedding size to learn)
+        min_count: int (minimum count in corpus for a word not to be ignored)
+        iter: int (number of training iterations)
+        sg: int 0/1 (use skip grams)
+        """
         texts = [t.split() for t in texts]
         self.emb_size = emb_size
         self.model = gensim.models.Word2Vec(
@@ -11,6 +20,9 @@ class Word2VecEmbeddings:
         )
 
     def get_emb_matrix(self, text_vectorization):
+        """Given a TextVectorization object with word to index mappings,
+        generate the embedding matrix
+        """
         vocabulary = text_vectorization.get_vocabulary()
         emb_matrix = np.zeros((len(vocabulary), self.emb_size))
         cnt = 0

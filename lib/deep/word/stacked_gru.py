@@ -23,11 +23,24 @@ class StackedGRU:
         hidden_dim=600,
         num_layers=3,
         dropout_p=0,
-        clf_dim=1024,
+        clf_dim=[1024],
         optimizer="adam",
         loss=None,
         word_embeddings=None,
     ):
+        """Parameters:
+        train_texts: list of strings
+        num_of_classes: int (1 if regression)
+        vocab_size: int (maximum number of words in vocabulary)
+        embedding_size: int (word embeddings size)
+        hidden_dim: int (hidden dimension for GRU)
+        num_layers: int (number of stacked GRU layers)
+        dropout_p: float (dropout probability)
+        clf_dim: list of ints (sizes of dense layers after the GRU)
+        optimizer: str (optimizer to use)
+        loss: str (name of loss function to use)
+        word_embeddings: None or Word2VecEmbeddings object
+        """
         self.num_of_classes = num_of_classes
         self.optimizer = optimizer
         self.loss = loss or (
@@ -50,6 +63,7 @@ class StackedGRU:
                 trainable=(word_embeddings is None),
             ),
         ]
+        # stack GRU Cells
         gru_cells = [GRUCell(hidden_dim) for _ in range(num_layers)]
         stacked_gru_cells = StackedRNNCells(gru_cells)
         gru_layer = RNN(stacked_gru_cells)
@@ -84,7 +98,9 @@ class StackedGRU:
         validation_inputs = self.encoder(validation_inputs)
         training_labels = tf.convert_to_tensor(training_labels, dtype=tf.float32)
         validation_labels = tf.convert_to_tensor(validation_labels, dtype=tf.float32)
+        # use early stopping
         es = EarlyStopping(monitor="val_loss", mode="min", verbose=1, patience=es)
+        # save best model
         mc = ModelCheckpoint(
             "checkpoints/best.h5",
             monitor="val_loss",

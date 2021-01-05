@@ -3,6 +3,7 @@ import copy
 
 
 def deep_get(d, path):
+    """Dict deep get"""
     path = path.split("/")
     current = d
     for item in path:
@@ -14,6 +15,7 @@ def deep_get(d, path):
 
 
 def deep_set(d, path, value):
+    """Dict deep set"""
     current = d
     path = path.split("/")
     for item in path[:-1]:
@@ -22,8 +24,23 @@ def deep_set(d, path, value):
 
 
 def expand_config(config):
+    """Given a configuration dictionary recursivly expand all array-like values and return
+    a list of configuration dictionaries.
+
+    For example:
+        given a configuration dict with a key 'C' that has associated a value of
+        [0, 1, 2], expand the current configuration into 3 new ones where every
+        key and value is copied, but the 'C' key has value 0 in the first config,
+        value 1 in the second, and value 2 in the third. Continue the process
+        for each generated config as long as there exist an array-like value in its dict.
+
+    Useful for defining configurations for hyperparameter grid search.
+    """
+
+    # use a queue for the generated configs
     q = deque([config])
 
+    # check if there is any array-like value
     def find_list(d, path):
         if isinstance(d, list):
             return path
@@ -35,6 +52,7 @@ def expand_config(config):
                 return ret
         return None
 
+    # while there are configurations with array-like values expand them
     while True:
         current = q.popleft()
         path = find_list(current, "")

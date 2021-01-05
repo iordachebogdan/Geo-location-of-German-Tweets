@@ -2,6 +2,7 @@ import pandas as pd
 
 
 def load_data():
+    """Load the train, validation and test datasets as DataFrames"""
     COLS_LABELED = ["id", "lat", "long", "text"]
     COLS_NOT_LABELED = ["id", "text"]
     df_train = pd.read_csv("data/training.txt", names=COLS_LABELED)
@@ -16,6 +17,7 @@ def shuffle_df(df):
 
 
 def kfold(df_train, df_val, num_folds):
+    # generate k-folds from the train and validation DataFrames
     df = pd.concat([df_train, df_val])
     df = shuffle_df(df)
 

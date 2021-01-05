@@ -1,16 +1,11 @@
+"""Script for storing lists of all cleaned tweets to a text file
+    and also storing mappings from tweet ids to indeger indexes
+
+    Used for computing string kernels
+"""
 import pandas as pd
 import pickle
-import re
-
-
-def clean(text):
-    text = re.sub(r"@[a-zA-Z0-9äöüÄÖÜß]+", " ", text)
-    text = re.sub(r"https?://[^ ]+", " ", text)
-    text = re.sub(r"www.[^ ]+", " ", text)
-    text = re.sub(r"[^a-zA-ZäöüÄÖÜß]", " ", text)
-    text = re.sub(" +", " ", text).strip()
-    text = text.lower()
-    return text
+from lib.preprocessing.cleaning import basic_clean as clean
 
 
 def load_data():
@@ -25,6 +20,7 @@ def load_data():
 
 df_train, df_val, df_test = load_data()
 
+# clean and store all tweets
 cnt = 0
 id_to_index = {}
 with open(
@@ -44,6 +40,7 @@ with open(
 assert len(df_train) + len(df_val) + len(df_test) == cnt
 assert len(id_to_index) == cnt
 
+# store index mappings
 with open(
     "string-kernel-data/String_Kernels_Package_v1.0/String_Kernels_Package/code/"
     "tweet_ids_cleaned.p",

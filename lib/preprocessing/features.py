@@ -6,6 +6,8 @@ from tqdm import tqdm
 
 
 class BOW(object):
+    """Wrapper for text representation using CountVectorizer and TfidfTransformer"""
+
     def __init__(
         self, lowercase, ngram_min, ngram_max, max_features, use_idf, analyzer
     ):
@@ -18,6 +20,7 @@ class BOW(object):
         self.analyzer = analyzer
 
     def get_repr(self):
+        """Return the representation Pipeline"""
         return Pipeline(
             [
                 (
@@ -40,6 +43,7 @@ class BOW(object):
         )
 
     def get_config(self):
+        """Get parameters dict"""
         return {
             "lowercase": self.lowercase,
             "ngram_min": self.ngram_min,
@@ -51,7 +55,13 @@ class BOW(object):
 
 
 class StringKernelPresenceBits(object):
+    """Class for managing stored string kernel matrices"""
+
     def __init__(self, kernel_path, ids_path):
+        """Parameters:
+        kernel_path: path to where the kernel matrix is stored
+        ids_path: path to mapping from tweet ids to integer indexes
+        """
         super().__init__()
         self.id_to_index = pickle.load(open(ids_path, "rb"))
         self.kernel_matrix = []
@@ -70,6 +80,7 @@ class StringKernelPresenceBits(object):
         assert len(self.kernel_matrix) == len(self.id_to_index)
 
     def __call__(self, xs, ys):
+        """Callable class, returns the kernel matrix for given sets of tweet ids"""
         if xs is ys and self.r is not None:
             print("use cached")
             return self.r
