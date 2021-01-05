@@ -1,0 +1,20 @@
+{
+    "type": "classic",
+    "method": "regression",
+    "clean": {},
+    "representation": {
+        "bow": {
+            "lowercase": 1,
+            "use_idf": 1,
+            "ngram_min": 1,
+            "ngram_max": 1,
+            "max_features": 10000,
+            "analyzer": "word"
+        }
+    },
+    "algorithm": {
+        "linearsvr": {
+            "c": 0.001
+        }
+    }
+}
